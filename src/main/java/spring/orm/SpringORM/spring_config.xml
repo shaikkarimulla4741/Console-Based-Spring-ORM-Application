@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- This enables the annotation-driven transaction management in Spring, 
+		allowing you to use @Transactional annotations. It simplifies the configuration 
+		and management of transactions in your application. -->
+	<tx:annotation-driven />
+
+	<!-- DataSource Bean, Takes Data Base Details as input -->
+	<bean
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		name="dSource">
+		<property name="driverClassName"
+			value="com.mysql.cj.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/spring" />
+		<property name="username" value="root" />
+		<property name="password" value="K1rimull@" />
+	</bean>
+
+	<!-- SessionFactory Interface Implemented Class "LocalSessionFactoryBean" 
+		Bean, Takes Data Source, HibernateProperties, Annotated Classes. -->
+	<bean
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"
+		name="factory">
+
+		<!-- The LocalSessionFactoryBean requires 3 properties to form its Object. 
+			1.DataSource, Property name should be "dataSource". 2.HibernateProperties, 
+			Property name="hibernatedProperties". 3.AnnotatedClasses, Property name="annotatedClasses". -->
+		<property name="dataSource" ref="dSource" />
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+
+		<property name="annotatedClasses">
+			<list>
+				<value>ormHibernate.Entities.Student</value>
+			</list>
+		</property>
+
+	</bean>
+
+	<!-- HibernateTemplate Bean, Takes LocalSessionFactoryBean object -->
+	<bean class="org.springframework.orm.hibernate5.HibernateTemplate"
+		name="hibernateTemplate">
+
+		<!-- The HibernateTemplate is dependent on SessionFactory Object, So we 
+			should give the name of the property as "sessionFactory" -->
+		<property name="sessionFactory" ref="factory" />
+	</bean>
+
+	<!-- DAO class Bean, Takes HibernateTemplate object -->
+	<bean class="hibernateTemplate.DAO.StudentDAO" name="studentDAO">
+
+		<!-- The DAO class required the HibernateTemplate Object, So the name of 
+			the property name should be only "hibernateTemplate" -->
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<!-- This bean is used to begin HibernateTransaction -->
+	<!-- HibernateTransactionManager, Takes LocalSessionFactoryBean object -->
+	<bean
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+		name="transactionManager">
+
+		<!-- The HibernateTransactionManager is dependent on SessionFactory Object, 
+			So the property name should be "sessionFactory" -->
+		<property name="sessionFactory" ref="factory" />
+	</bean>
+
+</beans>
