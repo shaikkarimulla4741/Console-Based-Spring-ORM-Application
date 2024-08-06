@@ -1,4 +1,4 @@
-package spring.orm.SpringORM;
+package springOrm.Main_Config;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ import ormHibernate.Entities.Student;
 
 public class App {
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("spring/orm/SpringORM/spring_config.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("springOrm/Main_Config/spring_config.xml");
 		StudentDAO studentDao = context.getBean("studentDAO", StudentDAO.class);
 		BufferedReader bR = new BufferedReader(new InputStreamReader(System.in));
 		
